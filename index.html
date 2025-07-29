@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindMatch AI - Neuro-Aware Career Recommender</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-purple-900 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 flex items-center justify-center min-h-screen transition-colors duration-500">
+  <div id="app" class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-lg w-full text-center transition-colors duration-500 relative">
+    <!-- Dark Mode Toggle -->
+    <div class="absolute top-4 right-4">
+      <button id="dark-mode-toggle" aria-label="Toggle dark mode" class="text-gray-600 dark:text-gray-200 focus:outline-none">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ISRO Watermark -->
+    <div class="absolute bottom-2 right-2 opacity-20">
+      <span class="text-gray-400 dark:text-gray-500 text-sm font-semibold">ISRO Inspired</span>
+    </div>
+
+    <!-- Intro Modal -->
+    <div id="intro-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full text-center">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Welcome to MindMatch AI! 🚀</h2>
+        <p class="text-lg text-gray-600 dark:text-gray-200 mb-6">Discover ISRO-inspired careers tailored to your unique brain style, designed for neurodiverse minds!</p>
+        <button id="start-intro" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Start quiz">Get Started</button>
+      </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="hidden">
+      <h1 class="text-5xl font-bold text-gray-800 dark:text-white mb-4">MindMatch AI 🌌</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-200 mb-6">Launch into space careers tailored to your cognitive strengths!</p>
+      <button id="start-quiz" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Start quiz">Launch Quiz</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden">
+      <div class="relative flex justify-center mb-6">
+        <svg class="w-24 h-24" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" stroke-width="5" class="dark:stroke-gray-700"/>
+          <circle id="progress-circle" cx="50" cy="50" r="45" fill="none" stroke="url(#grad)" stroke-width="5" stroke-dasharray="283" stroke-dashoffset="283" class="animate-pulse"/>
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span id="progress-text" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-gray-800 dark:text-white">0%</span>
+      </div>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-3xl font-semibold text-gray-800 dark:text-white">Question <span id="question-number"></span></h2>
+        <div class="flex items-center gap-2">
+          <span id="timer" class="text-gray-600 dark:text-gray-200">20s</span>
+          <button id="toggle-timer" class="text-sm text-blue-600 dark:text-blue-400 hover:underline" aria-label="Toggle timer">Disable Timer</button>
+        </div>
+      </div>
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md mb-6 quiz-card relative">
+        <span class="absolute top-4 left-4 text-2xl animate-bounce">🚀</span>
+        <p id="question-text" class="text-xl font-medium text-gray-800 dark:text-white"></p>
+      </div>
+      <div id="options" class="space-y-4"></div>
+      <div class="mt-6 flex justify-between">
+        <button id="back-question" class="bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50" disabled aria-label="Previous question">Back</button>
+        <button id="next-question" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Next question">Next</button>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="hidden">
+      <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">Your Brain Style & Careers 🌟</h2>
+      <p id="brain-type" class="text-2xl font-medium text-gray-700 dark:text-gray-100 mb-4"></p>
+      <div id="answer-summary" class="mb-6 text-left text-gray-600 dark:text-gray-100"></div>
+      <div id="loading" class="text-gray-600 dark:text-gray-200 mb-4 hidden">Loading careers... <span class="animate-pulse">✨</span></div>
+      <div id="error-message" class="text-red-500 dark:text-red-400 mb-4 hidden">Failed to load careers. Showing default options.</div>
+      <div id="careers" class="space-y-4"></div>
+      <div class="mt-6">
+        <p class="text-gray-600 dark:text-gray-200 mb-4 text-lg">Rate your experience:</p>
+        <div class="flex justify-center space-x-2">
+          <button class="rating-star" data-rating="1" aria-label="Rate 1 star">⭐</button>
+          <button class="rating-star" data-rating="2" aria-label="Rate 2 stars">⭐</button>
+          <button class="rating-star" data-rating="3" aria-label="Rate 3 stars">⭐</button>
+          <button class="rating-star" data-rating="4" aria-label="Rate 4 stars">⭐</button>
+          <button class="rating-star" data-rating="5" aria-label="Rate 5 stars">⭐</button>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-center">
+        <button id="restart-quiz" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Restart quiz">Restart Quiz</button>
+      </div>
+      <button id="mentor-button" class="mt-4 text-blue-600 dark:text-blue-400 hover:underline" aria-label="Meet a mentor">Meet a Mentor (Coming Soon!)</button>
+    </div>
+
+    <!-- Mentor Modal -->
+    <div id="mentor-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full text-center">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Meet a Mentor 🚀</h2>
+        <p class="text-lg text-gray-600 dark:text-gray-200 mb-6">Connect with ISRO experts to guide your space career journey. Coming soon!</p>
+        <button id="close-mentor" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Close mentor modal">Close</button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
